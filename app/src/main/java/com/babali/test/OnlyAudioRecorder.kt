@@ -126,22 +126,22 @@ class OnlyAudioRecorder private constructor(){
         val channels = 1
         val byteRate = 16 * SampleRate * channels / 8
         val header = ByteArray(44)
-        header[0] = 'R'.toByte()
-        header[1] = 'I'.toByte()
-        header[2] = 'F'.toByte()
-        header[3] = 'F'.toByte()
+        header[0] = 'R'.code.toByte()
+        header[1] = 'I'.code.toByte()
+        header[2] = 'F'.code.toByte()
+        header[3] = 'F'.code.toByte()
         header[4] = (totalDataLen and 0xff).toByte()
         header[5] = (totalDataLen shr 8 and 0xff).toByte()
         header[6] = (totalDataLen shr 16 and 0xff).toByte()
         header[7] = (totalDataLen shr 24 and 0xff).toByte()
-        header[8] = 'W'.toByte()
-        header[9] = 'A'.toByte()
-        header[10] = 'V'.toByte()
-        header[11] = 'E'.toByte()
-        header[12] = 'f'.toByte() // 'fmt ' chunk
-        header[13] = 'm'.toByte()
-        header[14] = 't'.toByte()
-        header[15] = ' '.toByte()
+        header[8] = 'W'.code.toByte()
+        header[9] = 'A'.code.toByte()
+        header[10] = 'V'.code.toByte()
+        header[11] = 'E'.code.toByte()
+        header[12] = 'f'.code.toByte() // 'fmt ' chunk
+        header[13] = 'm'.code.toByte()
+        header[14] = 't'.code.toByte()
+        header[15] = ' '.code.toByte()
         header[16] = 16 // 4 bytes: size of 'fmt ' chunk
         header[17] = 0
         header[18] = 0
@@ -162,10 +162,10 @@ class OnlyAudioRecorder private constructor(){
         header[33] = 0
         header[34] = 16 // bits per sample
         header[35] = 0
-        header[36] = 'd'.toByte()
-        header[37] = 'a'.toByte()
-        header[38] = 't'.toByte()
-        header[39] = 'a'.toByte()
+        header[36] = 'd'.code.toByte()
+        header[37] = 'a'.code.toByte()
+        header[38] = 't'.code.toByte()
+        header[39] = 'a'.code.toByte()
         header[40] = (totalAudioLen and 0xff).toByte()
         header[41] = (totalAudioLen shr 8 and 0xff).toByte()
         header[42] = (totalAudioLen shr 16 and 0xff).toByte()
@@ -174,12 +174,15 @@ class OnlyAudioRecorder private constructor(){
     }
 
     private inner class AudioRecordToFile : Thread() {
+        @Volatile
+        var running = true
 
         override fun run() {
             super.run()
 
             writeDateTOFile()
             copyWaveFile(PCMPath, WAVPath)
+            if (!running) return;
         }
     }
 }
